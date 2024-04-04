@@ -20,15 +20,6 @@ export class TransactionEntity extends BaseEntity {
    */
   type: string;
 
-  // @Column({ name: 'account_id', unsigned: true })
-  // accountId: number;
-
-  // @ManyToOne(
-  //   () => AccountEntity,
-  //   (account: AccountEntity) => account.transactions,
-  //   { cascade: true },
-  // )
-  // @JoinColumn({ name: 'account_id', referencedColumnName: 'id' })
   @ManyToOne(() => AccountEntity, {
     eager: true,
     nullable: false,
