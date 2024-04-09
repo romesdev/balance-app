@@ -20,7 +20,7 @@ export class RequestTransactionDto {
   description: string;
 
   @IsNotEmpty()
-  date: string;
+  date: Date;
 
   @IsNotEmpty()
   type: string;

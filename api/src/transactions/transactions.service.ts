@@ -33,10 +33,10 @@ export class TransactionsService {
       }
       await this.accountsRepository.save(account);
 
-      const transaction = await this.transactionsRepository.create({
+      const transaction = this.transactionsRepository.create({
         value: createTransactionDto.value,
         type: createTransactionDto.type,
-        date: new Date(),
+        date: createTransactionDto.date,
         description: createTransactionDto.description,
         account: account,
       });
