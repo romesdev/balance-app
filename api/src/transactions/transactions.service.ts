@@ -31,6 +31,7 @@ export class TransactionsService {
       } else {
         account.balance -= createTransactionDto.value;
       }
+
       await this.accountsRepository.save(account);
 
       const transaction = this.transactionsRepository.create({
@@ -63,8 +64,62 @@ export class TransactionsService {
     return this.transactionsRepository.find({ where: { id } });
   }
 
-  update(id: number, updateTransactionDto: Partial<RequestTransactionDto>) {
-    return this.transactionsRepository.update(id, updateTransactionDto);
+  async findByAccount(accountId: number) {
+    return this.transactionsRepository.find({
+      where: { account: { id: accountId } },
+    });
+  }
+
+  async update(
+    id: number,
+    updateTransactionDto: Partial<RequestTransactionDto>,
+  ) {
+    const queryRunner = this.dataSource.createQueryRunner();
+
+    await queryRunner.connect();
+    await queryRunner.startTransaction();
+
+    try {
+      const [transaction] = await this.transactionsRepository.find({
+        where: { id },
+      });
+
+      const [account] = await this.accountsRepository.find({
+        where: { id: transaction.account.id },
+      });
+
+      // "remove" the old value
+      account.balance =
+        transaction.type === 'c'
+          ? account.balance - transaction.value
+          : account.balance + transaction.value;
+
+      // "add" the new value
+      account.balance =
+        updateTransactionDto.type === 'c'
+          ? account.balance + updateTransactionDto.value
+          : account.balance - updateTransactionDto.value;
+
+      await this.accountsRepository.save(account);
+
+      await this.transactionsRepository.save({
+        ...transaction,
+        ...updateTransactionDto,
+      });
+
+      await queryRunner.commitTransaction();
+
+      return {
+        ...transaction,
+        ...updateTransactionDto,
+      };
+    } catch (err) {
+      // since we have errors lets rollback the changes we made
+      await queryRunner.rollbackTransaction();
+    } finally {
+      // you need to release a queryRunner which was manually instantiated
+      await queryRunner.release();
+    }
   }
 
   async remove(id: number) {
@@ -77,6 +132,8 @@ export class TransactionsService {
       const [transaction] = await this.transactionsRepository.find({
         where: { id },
       });
+
+      console.log(transaction);
 
       const [account] = await this.accountsRepository.find({
         where: { id: transaction.account.id },

@@ -16,6 +16,7 @@ export class AccountEntity extends BaseEntity {
   @OneToMany(
     () => TransactionEntity,
     (transaction: TransactionEntity) => transaction.account,
+    {  cascade: true},
   )
   transactions: TransactionEntity[];
 }

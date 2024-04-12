@@ -1,14 +1,18 @@
 
-// import AccountForm from "./components/account-form.tsx";
-import TransactionForm from "./components/transaction-form.tsx";
+import { useNavigate } from "react-router-dom";
+import {useEffect} from "react";
+
 
 function App() {
+  const navigate = useNavigate();
+
+  useEffect(() => {
+    navigate('/accounts')
+  },[])
+
 
   return (
-    <div>
-        {/*<AccountForm></AccountForm>*/}
-        <TransactionForm/>
-    </div>
+   <></>
   )
 }
 

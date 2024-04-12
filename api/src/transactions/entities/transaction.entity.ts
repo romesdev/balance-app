@@ -23,6 +23,8 @@ export class TransactionEntity extends BaseEntity {
   @ManyToOne(() => AccountEntity, {
     eager: true,
     nullable: false,
+    onDelete: 'CASCADE',
+    onUpdate: 'CASCADE',
   })
   @JoinColumn({ name: 'account_id' })
   account: AccountEntity;

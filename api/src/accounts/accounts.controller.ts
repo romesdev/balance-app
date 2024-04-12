@@ -41,4 +41,9 @@ export class AccountsController {
   remove(@Param('id') id: string) {
     return this.accountsService.remove(+id);
   }
+
+  // @Get('/transactions/:id')
+  // findTransactions(@Param('id') id: string) {
+  //   return this.accountsService.findTransactions(+id);
+  // }
 }

@@ -28,8 +28,25 @@ export class AccountsService {
     return this.accountsRepository.findOne({ where: { id } });
   }
 
-  update(id: number, updateAccountDto: Partial<RequestAccountDto>) {
-    return this.accountsRepository.update(id, updateAccountDto);
+  // async findTransactions(id: number) {
+  //   const account = await this.accountsRepository.findOne({ where: { id } });
+  //   return account.transactions.sort(
+  //     (a, b) => a.date.getTime() - b.date.getTime(),
+  //   );
+  // }
+
+  async update(id: number, updateAccount: Partial<RequestAccountDto>) {
+    const currentAccount = await this.findOne(id);
+
+    const newCurrentBalance =
+      currentAccount.balance -
+      currentAccount.openingBalance +
+      updateAccount.openingBalance;
+
+    return this.accountsRepository.update(id, {
+      ...updateAccount,
+      balance: newCurrentBalance,
+    });
   }
 
   remove(id: number) {
